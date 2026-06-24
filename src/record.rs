@@ -5,7 +5,7 @@ use std::{
 };
 
 pub type Record = Vec<Value>;
-type Seq<'a> = Peekable<Chars<'a>>;
+type CharIter<'a> = Peekable<Chars<'a>>;
 
 pub fn read_records(content: &str) -> Result<Vec<Record>, RecordError> {
     let mut records = Vec::new();
@@ -40,7 +40,7 @@ pub fn read_records(content: &str) -> Result<Vec<Record>, RecordError> {
     Ok(records)
 }
 
-fn read_str(chars: &mut Seq<'_>) -> Result<Value, RecordError> {
+fn read_str(chars: &mut CharIter<'_>) -> Result<Value, RecordError> {
     let mut res = String::new();
 
     while let Some(ch) = chars.next() {
@@ -59,7 +59,7 @@ fn read_str(chars: &mut Seq<'_>) -> Result<Value, RecordError> {
     Err(RecordError::UnterminatedStr)
 }
 
-fn read_num(chars: &mut Seq<'_>, first_ch: char) -> Result<Value, RecordError> {
+fn read_num(chars: &mut CharIter<'_>, first_ch: char) -> Result<Value, RecordError> {
     let mut res = String::from(first_ch);
     let mut is_float = false;
 
@@ -91,7 +91,7 @@ fn read_num(chars: &mut Seq<'_>, first_ch: char) -> Result<Value, RecordError> {
     }
 }
 
-fn read_value(chars: &mut Seq<'_>, first_ch: char) -> Result<Value, RecordError> {
+fn read_value(chars: &mut CharIter<'_>, first_ch: char) -> Result<Value, RecordError> {
     let mut res = String::from(first_ch);
 
     while let Some(ch) = chars.next() {
@@ -104,7 +104,7 @@ fn read_value(chars: &mut Seq<'_>, first_ch: char) -> Result<Value, RecordError>
     Ok(Value::Str(res.trim_end().to_string()))
 }
 
-fn consume_whitespaces(Seq: &mut Char<'_>) -> Result<(), RecordError>{
+fn consume_whitespaces(chars: &mut CharIter<'_>) -> Result<(), RecordError>{
     while let Some(ch) = chars.peek() {
         if *ch == ',' {
             let _ = chars.next();
@@ -127,13 +127,13 @@ mod record_test {
 
 	#[test]
 	fn test1() {
-		let expected = Record::from(vec![
+		let actual = Record::from(vec![
 			Value::Int(12), 
 			Value::None, 
 			Value::Float(3.14)
 		]);
-		let actual = &read_records("12, , 3.14").unwrap()[0];
-		assert_eq!(*actual, expected);
+		let expected = &read_records("12, , 3.14").unwrap()[0];
+		assert_eq!(actual, *expected);
 	}
 
 	#[test]
@@ -155,7 +155,7 @@ mod record_test {
 
 	#[test]
 	fn test3() {
-		let expected = vec![
+		let actual = vec![
 			Record::from(vec![
 				Value::Int(1997),
 				Value::Str("Ford".to_string()),
@@ -178,7 +178,7 @@ mod record_test {
 				Value::Float(4799.0),
 			])
 		];
-		let actual = read_records("1997,Ford,E350,\"ac, abs, moon\",3000.00
+		let expected = read_records("1997,Ford,E350,\"ac, abs, moon\",3000.00
 1999,Chevy,\"Venture \"\"Extended Edition\"\"\",,4900.00
 1996,Jeep,Grand Cherokee,\"MUST SELL!
 air, moon roof, loaded\",4799.00").unwrap();
