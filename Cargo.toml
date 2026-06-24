@@ -3,4 +3,9 @@ name = "csvalue"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = ["record"]
+value = []
+record = ["value"]
+
 [dependencies]
