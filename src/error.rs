@@ -1,10 +1,11 @@
 use std::{
-	fmt::Display,
+	fmt::{Display, Formatter, Error as FmtError},
 	error::Error,
 	num::{ParseIntError, ParseFloatError},
 };
 
 #[cfg(feature="record")]
+#[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RecordError {
 	UnterminatedStr,
@@ -14,7 +15,7 @@ pub enum RecordError {
 }
 
 impl Display for RecordError {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+	fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), FmtError> {
 		write!(f, "{}", match self {
 			Self::UnterminatedStr => "unterminated string".to_string(),
 			Self::InvalidInt(err) => err.to_string(),

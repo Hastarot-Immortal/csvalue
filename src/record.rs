@@ -80,12 +80,12 @@ fn read_num(chars: &mut CharIter<'_>, first_ch: char) -> Result<Value, RecordErr
 
     if is_float {
         match res.trim_end().parse::<f64>() {
-            Ok(float) => Ok(Value::Float(float)),
+            Ok(float) => Ok(Value::from(float)),
             Err(err) => Err(RecordError::InvalidFloat(err)),
         }
     } else {
         match res.trim_end().parse::<i64>() {
-            Ok(int) => Ok(Value::Int(int)),
+            Ok(int) => Ok(Value::from(int)),
             Err(err) => Err(RecordError::InvalidInt(err))
         }
     }
@@ -101,7 +101,7 @@ fn read_value(chars: &mut CharIter<'_>, first_ch: char) -> Result<Value, RecordE
             res.push(ch);
         }
     }
-    Ok(Value::Str(res.trim_end().to_string()))
+    Ok(Value::from(res.trim_end().to_string()))
 }
 
 fn consume_whitespaces(chars: &mut CharIter<'_>) -> Result<(), RecordError>{
@@ -128,9 +128,9 @@ mod test {
 	#[test]
 	fn test1() {
 		let actual = Record::from(vec![
-			Value::Int(12), 
+			Value::from(12), 
 			Value::None, 
-			Value::Float(3.14)
+			Value::from(3.14)
 		]);
 		let expected = &read_records("12, , 3.14").unwrap()[0];
 		assert_eq!(actual, *expected);
@@ -140,13 +140,13 @@ mod test {
 	fn test2() {
 		let actual = vec![
 			Record::from(vec![
-				Value::Int(-13),
-				Value::Str("hello\nworld".to_string()),
+				Value::from(-13),
+				Value::from("hello\nworld".to_string()),
 			]),
 			Record::from(vec![
-				Value::Str("abc".to_string()),
+				Value::from("abc".to_string()),
 				Value::None,
-				Value::Str("\"Peace\"".to_string()),
+				Value::from("\"Peace\"".to_string()),
 			])
 		];
 		let expected = read_records("-13, \"hello\nworld\"\n abc,,\"\"\"Peace\"\"\"").unwrap();
@@ -157,25 +157,25 @@ mod test {
 	fn test3() {
 		let actual = vec![
 			Record::from(vec![
-				Value::Int(1997),
-				Value::Str("Ford".to_string()),
-				Value::Str("E350".to_string()),
-				Value::Str("ac, abs, moon".to_string()),
-				Value::Float(3000.0),
+				Value::from(1997),
+				Value::from("Ford".to_string()),
+				Value::from("E350".to_string()),
+				Value::from("ac, abs, moon".to_string()),
+				Value::from(3000.0),
 			]),
 			Record::from(vec![
-				Value::Int(1999),
-				Value::Str("Chevy".to_string()),
-				Value::Str("Venture \"Extended Edition\"".to_string()),
+				Value::from(1999),
+				Value::from("Chevy".to_string()),
+				Value::from("Venture \"Extended Edition\"".to_string()),
 				Value::None,
-				Value::Float(4900.0),
+				Value::from(4900.0),
 			]),
 			Record::from(vec![
-				Value::Int(1996),
-				Value::Str("Jeep".to_string()),
-				Value::Str("Grand Cherokee".to_string()),
-				Value::Str("MUST SELL!\nair, moon roof, loaded".to_string()),
-				Value::Float(4799.0),
+				Value::from(1996),
+				Value::from("Jeep".to_string()),
+				Value::from("Grand Cherokee".to_string()),
+				Value::from("MUST SELL!\nair, moon roof, loaded".to_string()),
+				Value::from(4799.0),
 			])
 		];
 		let expected = read_records("1997,Ford,E350,\"ac, abs, moon\",3000.00
