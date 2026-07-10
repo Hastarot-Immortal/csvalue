@@ -1,26 +1,34 @@
 /// A wrapper for all common types a such as integer, float, string, etc.
 ///
-/// For convenience, there are many `as_*` methods for basic types such as integers, floats, and strings. 
+/// For convenience, there are many `as_*` methods for basic types. 
 ///
 /// # Example
 /// 
 /// ```
 /// use csvalue::Value;
 /// 
-/// let value = Value::from(42);
-/// let not_int_value = Value::from("not u8");
-/// let int = value.as_u8();
-/// let not_int = not_int_value.as_u8();
+/// let int_value = Value::from(42);
+/// let str_value = Value::from("not int");
+/// let none_value = Value::None;
+///
+/// let int = int_value.as_u8();
+/// let not_int = str_value.as_u8();
+/// let none = none_value.as_u8();
 /// 
 /// assert_eq!(int, Some(42));
 /// assert_eq!(not_int, None);
+/// assert_eq!(none, None);
 /// ```
 #[cfg(feature="value")]
 #[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 pub enum Value {
+  /// Integer number type
   Int(i64),
+  /// Floating-point number type
   Float(f64),
+  /// String type
   Str(String),
+  /// No value. Default for `Value`
   #[default]
   None,
 }

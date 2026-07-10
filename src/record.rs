@@ -4,10 +4,35 @@ use std::{
   str::Chars,
 };
 
+/// A dynamically-sized array of [`Value`].
+/// 
+/// Implements all methods of `Vec`.
 pub type Record = Vec<Value>;
+
 type CharIter<'a> = Peekable<Chars<'a>>;
 
-pub fn read_records(content: &str) -> Result<Vec<Record>, RecordError> {
+/// Parse a string into `Vec<Record>`, which is basically a matrix of [`Value`]. The delimeter — comma (`,`).
+///
+/// # Example
+///
+/// ```
+/// use csvalue::*;
+/// 
+/// let actual = vec![
+/// 	Record::from(vec![
+/// 		Value::from(-13),
+/// 		Value::from("hello\nworld".to_string()),
+/// 	]),
+/// 	Record::from(vec![
+/// 		Value::from("abc".to_string()),
+/// 		Value::None,
+/// 		Value::from("\"Peace\"".to_string()),
+/// 	])
+/// ];
+/// let expected = parse_records("-13, \"hello\nworld\"\n abc,,\"\"\"Peace\"\"\"").unwrap();
+/// assert_eq!(actual, expected)
+/// ```
+pub fn parse_records(content: &str) -> Result<Vec<Record>, RecordError> {
     let mut records = Vec::new();
     let mut record = Record::new();
     let mut chars = content.chars().peekable();
@@ -86,7 +111,7 @@ fn read_num(chars: &mut CharIter<'_>, first_ch: char) -> Result<Value, RecordErr
     } else {
         match res.trim_end().parse::<i64>() {
             Ok(int) => Ok(Value::from(int)),
-            Err(err) => Err(RecordError::InvalidInt(err))
+            Err(err) => Err(RecordError::InvalidInt(err)),
         }
     }
 }
@@ -132,29 +157,12 @@ mod test {
 			Value::None, 
 			Value::from(3.14)
 		]);
-		let expected = &read_records("12, , 3.14").unwrap()[0];
+		let expected = &parse_records("12, , 3.14").unwrap()[0];
 		assert_eq!(actual, *expected);
 	}
 
 	#[test]
 	fn test2() {
-		let actual = vec![
-			Record::from(vec![
-				Value::from(-13),
-				Value::from("hello\nworld".to_string()),
-			]),
-			Record::from(vec![
-				Value::from("abc".to_string()),
-				Value::None,
-				Value::from("\"Peace\"".to_string()),
-			])
-		];
-		let expected = read_records("-13, \"hello\nworld\"\n abc,,\"\"\"Peace\"\"\"").unwrap();
-		assert_eq!(actual, expected)
-	}
-
-	#[test]
-	fn test3() {
 		let actual = vec![
 			Record::from(vec![
 				Value::from(1997),
@@ -178,7 +186,7 @@ mod test {
 				Value::from(4799.0),
 			])
 		];
-		let expected = read_records("1997,Ford,E350,\"ac, abs, moon\",3000.00
+		let expected = parse_records("1997,Ford,E350,\"ac, abs, moon\",3000.00
 1999,Chevy,\"Venture \"\"Extended Edition\"\"\",,4900.00
 1996,Jeep,Grand Cherokee,\"MUST SELL!
 air, moon roof, loaded\",4799.00").unwrap();
