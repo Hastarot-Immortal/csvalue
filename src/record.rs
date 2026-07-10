@@ -122,7 +122,7 @@ fn consume_whitespaces(chars: &mut CharIter<'_>) -> Result<(), RecordError>{
 }
 
 #[cfg(test)]
-mod record_test {
+mod test {
 	use super::*;
 
 	#[test]
