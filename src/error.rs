@@ -26,3 +26,8 @@ impl Display for RecordError {
 }
 
 impl Error for RecordError {}
+
+#[cfg(feature="short_str")]
+pub enum ShortStrError {
+	TooBigString,
+}

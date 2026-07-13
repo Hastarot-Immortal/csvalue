@@ -75,7 +75,7 @@ fn read_str(chars: &mut CharIter<'_>) -> Result<Value, RecordError> {
                 let _ = chars.next();
             } else {
                 consume_whitespaces(chars)?;
-                return Ok(Value::Str(res));
+                return Ok(Value::from(res));
             }
         } else {
             res.push(ch);

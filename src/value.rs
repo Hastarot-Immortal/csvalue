@@ -1,3 +1,6 @@
+#[cfg(feature="short_str")]
+use crate::short_str::ShortStr;
+
 /// A wrapper for all common types a such as integer, float, string, etc.
 ///
 /// For convenience, there are many `as_*` methods for basic types. 
@@ -28,6 +31,8 @@ pub enum Value {
   Float(f64),
   /// String type
   Str(String),
+  #[cfg(feature="short_str")]
+  ShortStr(ShortStr),
   /// No value. Default for `Value`
   #[default]
   None,
@@ -135,6 +140,7 @@ impl Value {
   pub fn as_str(&self) -> Option<&str> {
     match self {
       Self::Str(string) => Some(string.as_str()),
+      Self::ShortStr(string) => Some(string.as_str()),
       _ => None,
     }
   }
@@ -142,6 +148,7 @@ impl Value {
   pub fn as_string(&self) -> Option<String> {
     match self {
       Self::Str(string) => Some(string.clone()),
+      Self::ShortStr(string) => Some(string.to_string()),
       _ => None,
     }
   }
@@ -175,13 +182,19 @@ impl From<f64> for Value {
 
 impl From<&str> for Value {
   fn from(value: &str) -> Self {
-    Value::Str(value.to_owned())
+    match ShortStr::try_from(value) {
+      Ok(s) => Value::ShortStr(s),
+      Err(_) => Value::Str(value.to_owned())
+    }
   }
 }
 
 impl From<String> for Value {
   fn from(value: String) -> Self {
-    Value::Str(value)
+    match ShortStr::try_from(value.as_str()) {
+      Ok(s) => Value::ShortStr(s),
+      Err(_) => Value::Str(value)
+    }
   }
 }
 
