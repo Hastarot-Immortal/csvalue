@@ -7,5 +7,13 @@ edition = "2024"
 default = ["record"]
 value = []
 record = ["value"]
+short_str = []
 
 [dependencies]
+
+[dev-dependencies]
+divan = "0.1.21"
+
+[[bench]]
+name = "short_str"
+harness = false
