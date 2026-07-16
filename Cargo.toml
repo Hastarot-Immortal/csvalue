@@ -7,5 +7,6 @@ edition = "2024"
 default = ["record"]
 value = []
 record = ["value"]
+boolean = ["value"]
 
 [dependencies]

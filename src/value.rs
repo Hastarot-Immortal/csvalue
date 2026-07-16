@@ -28,6 +28,12 @@ pub enum Value {
   Float(f64),
   /// String type
   Str(String),
+  /// Boolean type
+  #[cfg(feature="boolean")]
+  True,
+  /// Boolean type
+  #[cfg(feature="boolean")]
+  False,
   /// No value. Default for `Value`
   #[default]
   None,
@@ -145,6 +151,15 @@ impl Value {
       _ => None,
     }
   }
+
+  #[cfg(feature="boolean")]
+  pub fn as_bool(&self) -> Option<bool> {
+    match self {
+      Self::True => Some(true),
+      Self::False => Some(false),
+      _ => None,
+    }
+  }
 }
 
 macro_rules! impl_from_num {
@@ -175,13 +190,19 @@ impl From<f64> for Value {
 
 impl From<&str> for Value {
   fn from(value: &str) -> Self {
-    Value::Str(value.to_owned())
+    Value::from(value.to_owned())
   }
 }
 
 impl From<String> for Value {
   fn from(value: String) -> Self {
-    Value::Str(value)
+    match value {
+      #[cfg(feature="boolean")]
+      val if val.to_lowercase() == "true".to_owned() => Value::True,
+      #[cfg(feature="boolean")]
+      val if val.to_lowercase() == "false".to_owned() => Value::False,
+      _ => Value::Str(value),
+    }
   }
 }
 
