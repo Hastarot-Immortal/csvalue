@@ -1,4 +1,6 @@
-use crate::{Value, RecordError, Parser, Delimeter};
+use crate::{
+// Value, 
+RecordError, Parser, Delimeter};
 use std::{
   // iter::Peekable,
   // str::Chars,
@@ -17,18 +19,50 @@ where
 	type Output = Records;
 	type Error = RecordError;
 
-  fn parse(&self, content: &str) -> Result<Self::Output, Self::Error> {
-		todo!()
-  }
+  fn parse(&self, reader: &mut impl Read) -> Result<Self::Output, Self::Error> {
+    let mut records = Records::new();
+    let mut row_pointer = 0u32;
+    let mut buf = D::Buffer::default();
   
-  fn parse_reader(&self, reader: &mut impl Read) -> Result<Self::Output, Self::Error> {
-		todo!()
+		Ok(records)
   }
 }
 
-/// A dynamically-sized array of [`Value`].
-/// 
-/// Implements all methods of `Vec`.
-pub type Record = Vec<Value>;
+// type CharIter<'a> = Peekable<Chars<'a>>;
 
-pub struct Records(Vec<Records>);
+type Record = (u8, u32);
+
+pub struct Records {
+    pool: ValuePool,
+    records: Vec<Record>,
+    rows: Vec<u32>,
+}
+
+impl Records {
+  fn new() -> Self {
+    Self {
+      pool: ValuePool::new(),
+      records: Vec::new(),
+      rows: Vec::new(),
+    }
+  }
+}
+
+struct ValuePool {
+  ints: Pool<i64>,
+  floats: Pool<f64>,
+  strings: Pool<String>,
+}
+
+impl ValuePool {
+  fn new() -> Self {
+    Self {
+      ints: Pool(Vec::new()),
+      floats: Pool(Vec::new()),
+      strings: Pool(Vec::new()),
+      
+    }
+  }
+}
+
+struct Pool<T>(Vec<T>);

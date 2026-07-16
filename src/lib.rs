@@ -13,7 +13,7 @@ pub use value::Value;
 #[cfg(feature="parser")]
 pub use parser::{Parser, Delimeter};
 #[cfg(feature="record")]
-pub use record::{Record, Records, RecordParser};
+pub use record::{Records, RecordParser};
 #[cfg(feature="record")]
 pub use error::RecordError;
 
